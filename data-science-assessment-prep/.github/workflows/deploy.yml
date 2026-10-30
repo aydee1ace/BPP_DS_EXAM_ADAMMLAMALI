@@ -1,11 +1,9 @@
-
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
-
   workflow_dispatch:
 
 permissions:
@@ -21,10 +19,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: data-science-assessment-prep
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,11 +28,28 @@ jobs:
         with:
           node-version: 24
 
+      - name: Check application files
+        run: |
+          echo "Repository contents:"
+          ls -la
+          echo "Application folder contents:"
+          ls -la data-science-assessment-prep
+          echo "Source folder contents:"
+          ls -la data-science-assessment-prep/src
+
       - name: Install dependencies
+        working-directory: data-science-assessment-prep
         run: npm install
 
       - name: Build Vite application
+        working-directory: data-science-assessment-prep
         run: npm run build
+
+      - name: Verify completed build
+        run: |
+          test -f data-science-assessment-prep/dist/index.html
+          echo "The built index.html file exists."
+          ls -la data-science-assessment-prep/dist
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
